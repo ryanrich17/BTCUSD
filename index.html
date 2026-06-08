@@ -4,423 +4,61 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BTCUSD Signal App</title>
-
   <style>
-    :root {
-      --bg: #080b12;
-      --panel: #111827;
-      --panel-2: #151f32;
-      --text: #f8fafc;
-      --muted: #94a3b8;
-      --line: rgba(255,255,255,0.08);
-      --buy: #22c55e;
-      --sell: #ef4444;
-      --wait: #f59e0b;
-      --blue: #38bdf8;
-      --shadow: 0 18px 50px rgba(0,0,0,0.35);
+    :root{
+      --bg:#080b12;--card:#111827;--text:#f8fafc;--muted:#94a3b8;--line:rgba(255,255,255,.09);
+      --buy:#22c55e;--sell:#ef4444;--wait:#f59e0b;--btc:#f7931a;--blue:#38bdf8;
+      --shadow:0 18px 50px rgba(0,0,0,.35)
     }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 28%),
-        radial-gradient(circle at top right, rgba(247, 147, 26, 0.18), transparent 32%),
-        var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-    }
-
-    .app {
-      width: min(1180px, calc(100% - 28px));
-      margin: 0 auto;
-      padding: 28px 0 40px;
-    }
-
-    header {
-      display: flex;
-      justify-content: space-between;
-      gap: 18px;
-      align-items: center;
-      margin-bottom: 22px;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .coin {
-      width: 52px;
-      height: 52px;
-      border-radius: 16px;
-      background: linear-gradient(135deg, #f7931a, #fbbf24);
-      display: grid;
-      place-items: center;
-      font-weight: 900;
-      font-size: 28px;
-      color: #111827;
-      box-shadow: var(--shadow);
-    }
-
-    h1 {
-      font-size: clamp(24px, 4vw, 38px);
-      line-height: 1;
-      margin: 0 0 6px;
-      letter-spacing: -0.04em;
-    }
-
-    .subtitle {
-      margin: 0;
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .status-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,0.04);
-      padding: 10px 13px;
-      border-radius: 999px;
-      color: var(--muted);
-      font-size: 13px;
-      white-space: nowrap;
-    }
-
-    .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--wait);
-      box-shadow: 0 0 18px var(--wait);
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
-      gap: 18px;
-    }
-
-    .card {
-      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
-      border: 1px solid var(--line);
-      border-radius: 26px;
-      padding: 22px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(14px);
-    }
-
-    .hero {
-      min-height: 330px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .top-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: flex-start;
-    }
-
-    .pair {
-      color: var(--muted);
-      margin: 0 0 7px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      font-size: 12px;
-    }
-
-    .price {
-      font-size: clamp(42px, 8vw, 74px);
-      letter-spacing: -0.07em;
-      line-height: 0.95;
-      margin: 0;
-    }
-
-    .move {
-      margin-top: 12px;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .signal-box {
-      text-align: right;
-      min-width: 145px;
-    }
-
-    .signal-label {
-      color: var(--muted);
-      font-size: 12px;
-      margin-bottom: 7px;
-      letter-spacing: 0.08em;
-      font-weight: 700;
-    }
-
-    .signal {
-      font-size: 38px;
-      font-weight: 900;
-      letter-spacing: -0.04em;
-      color: var(--wait);
-    }
-
-    .confidence-wrap {
-      margin-top: 24px;
-    }
-
-    .bar-label {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 8px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .bar {
-      height: 12px;
-      width: 100%;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.08);
-      overflow: hidden;
-    }
-
-    .bar-fill {
-      height: 100%;
-      width: 0%;
-      border-radius: 999px;
-      background: var(--wait);
-      transition: width 0.45s ease, background 0.45s ease;
-    }
-
-    .levels {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      margin-top: 22px;
-    }
-
-    .level {
-      background: rgba(255,255,255,0.045);
-      border: 1px solid var(--line);
-      padding: 14px;
-      border-radius: 18px;
-    }
-
-    .level span {
-      display: block;
-      color: var(--muted);
-      font-size: 12px;
-      margin-bottom: 7px;
-    }
-
-    .level strong {
-      font-size: 18px;
-    }
-
-    .section-title {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      align-items: center;
-      margin-bottom: 16px;
-    }
-
-    .section-title h2 {
-      margin: 0;
-      font-size: 20px;
-      letter-spacing: -0.03em;
-    }
-
-    .get-signal {
-      width: 100%;
-      border: 0;
-      background: linear-gradient(135deg, #f7931a, #fbbf24);
-      color: #111827;
-      padding: 15px 18px;
-      border-radius: 18px;
-      cursor: pointer;
-      font-weight: 950;
-      font-size: 16px;
-      letter-spacing: 0.04em;
-      box-shadow: 0 18px 40px rgba(247,147,26,0.22);
-      margin-bottom: 16px;
-    }
-
-    .get-signal:active {
-      transform: scale(0.99);
-    }
-
-    .setup-list {
-      display: grid;
-      gap: 12px;
-    }
-
-    .setup-item {
-      background: rgba(255,255,255,0.045);
-      border: 1px solid var(--line);
-      padding: 16px;
-      border-radius: 18px;
-      display: grid;
-      gap: 6px;
-    }
-
-    .setup-item .label {
-      color: var(--muted);
-      font-size: 12px;
-      letter-spacing: 0.08em;
-      font-weight: 800;
-    }
-
-    .setup-item .value {
-      font-size: 21px;
-      font-weight: 900;
-      letter-spacing: -0.02em;
-    }
-
-    .tp {
-      color: var(--buy);
-    }
-
-    .sl {
-      color: var(--sell);
-    }
-
-    .indicators {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-top: 18px;
-    }
-
-    .indicator {
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,0.04);
-      border-radius: 18px;
-      padding: 14px;
-    }
-
-    .indicator span {
-      display: block;
-      color: var(--muted);
-      font-size: 12px;
-      margin-bottom: 6px;
-    }
-
-    .indicator strong {
-      font-size: 19px;
-    }
-
-    .explain {
-      color: #cbd5e1;
-      line-height: 1.55;
-      margin: 16px 0 0;
-      font-size: 14px;
-    }
-
-    .controls {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 18px;
-    }
-
-    select {
-      background: rgba(255,255,255,0.06);
-      color: var(--text);
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 10px 12px;
-      outline: none;
-    }
-
-    option {
-      color: #111827;
-    }
-
-    .footer-note {
-      margin-top: 16px;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.5;
-    }
-
-    .mini-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      margin-top: 18px;
-    }
-
-    .mini {
-      border-radius: 18px;
-      padding: 14px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--line);
-    }
-
-    .mini span {
-      color: var(--muted);
-      font-size: 12px;
-      display: block;
-      margin-bottom: 6px;
-    }
-
-    .mini strong {
-      font-size: 18px;
-    }
-
-    @media (max-width: 850px) {
-      header,
-      .top-row {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .grid {
-        grid-template-columns: 1fr;
-      }
-
-      .levels,
-      .indicators,
-      .mini-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .signal-box {
-        text-align: left;
-      }
-    }
-
-    @media (max-width: 520px) {
-      .levels,
-      .indicators,
-      .mini-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .card {
-        padding: 18px;
-        border-radius: 22px;
-      }
-
-      .price {
-        font-size: 44px;
-      }
-    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at top left,rgba(56,189,248,.18),transparent 28%),radial-gradient(circle at top right,rgba(247,147,26,.18),transparent 32%),var(--bg);color:var(--text);min-height:100vh}
+    .app{width:min(1180px,calc(100% - 28px));margin:0 auto;padding:28px 0 40px}
+    header{display:flex;justify-content:space-between;gap:18px;align-items:center;margin-bottom:22px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .coin{width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,#f7931a,#fbbf24);display:grid;place-items:center;font-weight:950;font-size:28px;color:#111827;box-shadow:var(--shadow)}
+    h1{font-size:clamp(24px,4vw,38px);line-height:1;margin:0 0 6px;letter-spacing:-.04em}
+    .subtitle{margin:0;color:var(--muted);font-size:14px}
+    .status-pill{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:rgba(255,255,255,.04);padding:10px 13px;border-radius:999px;color:var(--muted);font-size:13px;white-space:nowrap}
+    .dot{width:8px;height:8px;border-radius:50%;background:var(--wait);box-shadow:0 0 18px var(--wait)}
+    .grid{display:grid;grid-template-columns:1.2fr .8fr;gap:18px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));border:1px solid var(--line);border-radius:26px;padding:22px;box-shadow:var(--shadow);backdrop-filter:blur(14px)}
+    .hero{min-height:330px;display:flex;flex-direction:column;justify-content:space-between}
+    .top-row{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+    .pair{color:var(--muted);margin:0 0 7px;font-weight:800;letter-spacing:.08em;font-size:12px}
+    .price{font-size:clamp(42px,8vw,74px);letter-spacing:-.07em;line-height:.95;margin:0}
+    .move{margin-top:12px;display:inline-flex;gap:8px;color:var(--muted);font-size:14px}
+    .signal-box{text-align:right;min-width:145px}
+    .signal-label{color:var(--muted);font-size:12px;margin-bottom:7px;letter-spacing:.08em;font-weight:800}
+    .signal{font-size:38px;font-weight:950;letter-spacing:-.04em;color:var(--wait)}
+    .confidence-wrap{margin-top:24px}
+    .bar-label{display:flex;justify-content:space-between;margin-bottom:8px;color:var(--muted);font-size:13px}
+    .bar{height:12px;width:100%;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden}
+    .bar-fill{height:100%;width:0%;border-radius:999px;background:var(--wait);transition:width .45s ease,background .45s ease}
+    .levels,.indicators,.mini-grid{display:grid;gap:12px}
+    .levels{grid-template-columns:repeat(4,1fr);margin-top:22px}
+    .indicators{grid-template-columns:repeat(3,1fr);margin-top:18px}
+    .mini-grid{grid-template-columns:repeat(2,1fr);margin-top:18px}
+    .level,.indicator,.mini,.setup-item{background:rgba(255,255,255,.045);border:1px solid var(--line);padding:14px;border-radius:18px}
+    .level span,.indicator span,.mini span,.setup-item .label{display:block;color:var(--muted);font-size:12px;margin-bottom:7px}
+    .setup-item .label{letter-spacing:.08em;font-weight:800}
+    .level strong,.indicator strong,.mini strong{font-size:18px}
+    .section-title{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:16px}
+    .section-title h2{margin:0;font-size:20px;letter-spacing:-.03em}
+    .get-signal{width:100%;border:0;background:linear-gradient(135deg,#f7931a,#fbbf24);color:#111827;padding:15px 18px;border-radius:18px;cursor:pointer;font-weight:950;font-size:16px;letter-spacing:.04em;box-shadow:0 18px 40px rgba(247,147,26,.22);margin-bottom:16px}
+    .get-signal:disabled{opacity:.65;cursor:not-allowed}
+    .setup-list{display:grid;gap:12px}
+    .setup-item{padding:16px;display:grid;gap:6px}
+    .setup-item .value{font-size:21px;font-weight:950;letter-spacing:-.02em}
+    .tp{color:var(--buy)}.sl{color:var(--sell)}
+    .controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+    select{background:rgba(255,255,255,.06);color:var(--text);border:1px solid var(--line);border-radius:12px;padding:10px 12px;outline:none}
+    option{color:#111827}
+    .explain{color:#cbd5e1;line-height:1.55;margin:16px 0 0;font-size:14px}
+    .footer-note{margin-top:16px;color:var(--muted);font-size:12px;line-height:1.5}
+    @media(max-width:850px){header,.top-row{flex-direction:column;align-items:flex-start}.grid{grid-template-columns:1fr}.levels,.indicators,.mini-grid{grid-template-columns:repeat(2,1fr)}.signal-box{text-align:left}}
+    @media(max-width:520px){.levels,.indicators,.mini-grid{grid-template-columns:1fr}.card{padding:18px;border-radius:22px}.price{font-size:44px}}
   </style>
 </head>
-
 <body>
   <main class="app">
     <header>
@@ -428,14 +66,10 @@
         <div class="coin">₿</div>
         <div>
           <h1>BTCUSD Signal App</h1>
-          <p class="subtitle">Live Bitcoin signal using EMA trend, RSI momentum, ATR volatility and support/resistance.</p>
+          <p class="subtitle">Live BTCUSD signal using Kraken BTC/USD data, EMA trend, RSI momentum and ATR volatility.</p>
         </div>
       </div>
-
-      <div class="status-pill">
-        <span class="dot" id="statusDot"></span>
-        <span id="statusText">Press GET SIGNAL</span>
-      </div>
+      <div class="status-pill"><span class="dot" id="statusDot"></span><span id="statusText">Press GET SIGNAL</span></div>
     </header>
 
     <section class="grid">
@@ -447,203 +81,285 @@
               <h2 class="price" id="price">--</h2>
               <div class="move" id="move">Waiting for signal...</div>
             </div>
-
             <div class="signal-box">
               <div class="signal-label">TRADE SIGNAL</div>
               <div class="signal" id="signal">WAIT</div>
             </div>
           </div>
-
           <div class="confidence-wrap">
-            <div class="bar-label">
-              <span>Confidence</span>
-              <strong id="confidenceText">--%</strong>
-            </div>
-            <div class="bar">
-              <div class="bar-fill" id="confidenceBar"></div>
-            </div>
+            <div class="bar-label"><span>Confidence</span><strong id="confidenceText">--%</strong></div>
+            <div class="bar"><div class="bar-fill" id="confidenceBar"></div></div>
           </div>
         </div>
-
-        <div>
-          <div class="levels">
-            <div class="level">
-              <span>Buy Above</span>
-              <strong id="buyAbove">--</strong>
-            </div>
-            <div class="level">
-              <span>Sell Below</span>
-              <strong id="sellBelow">--</strong>
-            </div>
-            <div class="level">
-              <span>Support</span>
-              <strong id="support">--</strong>
-            </div>
-            <div class="level">
-              <span>Resistance</span>
-              <strong id="resistance">--</strong>
-            </div>
-          </div>
+        <div class="levels">
+          <div class="level"><span>Buy Above</span><strong id="buyAbove">--</strong></div>
+          <div class="level"><span>Sell Below</span><strong id="sellBelow">--</strong></div>
+          <div class="level"><span>Support</span><strong id="support">--</strong></div>
+          <div class="level"><span>Resistance</span><strong id="resistance">--</strong></div>
         </div>
       </div>
 
       <aside class="card">
-        <div class="section-title">
-          <h2>Trade Setup</h2>
-        </div>
-
-        <button class="get-signal" onclick="getSignal()">GET SIGNAL</button>
-
+        <div class="section-title"><h2>Trade Setup</h2></div>
+        <button class="get-signal" id="getBtn" onclick="getSignal()">GET SIGNAL</button>
         <div class="setup-list">
-          <div class="setup-item">
-            <div class="label">ACTION</div>
-            <div class="value" id="actionText">Press GET SIGNAL</div>
-          </div>
-
-          <div class="setup-item">
-            <div class="label">ENTRY</div>
-            <div class="value" id="entryZone">--</div>
-          </div>
-
-          <div class="setup-item">
-            <div class="label">STOP LOSS</div>
-            <div class="value sl" id="stopLoss">--</div>
-          </div>
-
-          <div class="setup-item">
-            <div class="label">TAKE PROFIT 1</div>
-            <div class="value tp" id="takeProfit1">--</div>
-          </div>
-
-          <div class="setup-item">
-            <div class="label">TAKE PROFIT 2</div>
-            <div class="value tp" id="takeProfit2">--</div>
-          </div>
+          <div class="setup-item"><div class="label">ACTION</div><div class="value" id="actionText">Press GET SIGNAL</div></div>
+          <div class="setup-item"><div class="label">ENTRY</div><div class="value" id="entryZone">--</div></div>
+          <div class="setup-item"><div class="label">STOP LOSS</div><div class="value sl" id="stopLoss">--</div></div>
+          <div class="setup-item"><div class="label">TAKE PROFIT 1</div><div class="value tp" id="takeProfit1">--</div></div>
+          <div class="setup-item"><div class="label">TAKE PROFIT 2</div><div class="value tp" id="takeProfit2">--</div></div>
         </div>
       </aside>
     </section>
 
     <section class="grid" style="margin-top:18px;">
       <div class="card">
-        <div class="section-title">
-          <h2>Signal Engine</h2>
-        </div>
-
+        <div class="section-title"><h2>Signal Engine</h2></div>
         <div class="indicators">
-          <div class="indicator">
-            <span>EMA 20</span>
-            <strong id="ema20">--</strong>
-          </div>
-
-          <div class="indicator">
-            <span>EMA 50</span>
-            <strong id="ema50">--</strong>
-          </div>
-
-          <div class="indicator">
-            <span>RSI 14</span>
-            <strong id="rsi">--</strong>
-          </div>
-
-          <div class="indicator">
-            <span>ATR 14</span>
-            <strong id="atr">--</strong>
-          </div>
-
-          <div class="indicator">
-            <span>24h High</span>
-            <strong id="high24">--</strong>
-          </div>
-
-          <div class="indicator">
-            <span>24h Low</span>
-            <strong id="low24">--</strong>
-          </div>
+          <div class="indicator"><span>EMA 20</span><strong id="ema20">--</strong></div>
+          <div class="indicator"><span>EMA 50</span><strong id="ema50">--</strong></div>
+          <div class="indicator"><span>RSI 14</span><strong id="rsi">--</strong></div>
+          <div class="indicator"><span>ATR 14</span><strong id="atr">--</strong></div>
+          <div class="indicator"><span>24h High</span><strong id="high24">--</strong></div>
+          <div class="indicator"><span>24h Low</span><strong id="low24">--</strong></div>
         </div>
-
-        <p class="explain" id="explainText">
-          Press GET SIGNAL to calculate the current BTCUSD trade setup.
-        </p>
+        <p class="explain" id="explainText">Press GET SIGNAL to calculate the current BTCUSD trade setup.</p>
       </div>
 
       <div class="card">
-        <div class="section-title">
-          <h2>Settings</h2>
-        </div>
-
+        <div class="section-title"><h2>Settings</h2></div>
         <div class="controls">
           <select id="timeframe">
-            <option value="15m">15m Scalping</option>
-            <option value="30m">30m Intraday</option>
-            <option value="1h" selected>1h Safer Bias</option>
-            <option value="4h">4h Swing Bias</option>
+            <option value="15">15m Scalping</option>
+            <option value="30">30m Intraday</option>
+            <option value="60" selected>1h Safer Bias</option>
+            <option value="240">4h Swing Bias</option>
           </select>
-
           <select id="riskMode">
             <option value="tight">Tight SL / TP</option>
             <option value="normal" selected>Normal SL / TP</option>
             <option value="wide">Wide SL / TP</option>
           </select>
         </div>
-
         <div class="mini-grid">
-          <div class="mini">
-            <span>Market Source</span>
-            <strong>Binance BTCUSDT</strong>
-          </div>
-
-          <div class="mini">
-            <span>Signal Mode</span>
-            <strong>Button Press</strong>
-          </div>
-
-          <div class="mini">
-            <span>Best Use</span>
-            <strong>Confirmation</strong>
-          </div>
-
-          <div class="mini">
-            <span>Pair Display</span>
-            <strong>BTCUSD</strong>
-          </div>
+          <div class="mini"><span>Market Source</span><strong>Kraken XBT/USD</strong></div>
+          <div class="mini"><span>Signal Mode</span><strong>Button Press</strong></div>
+          <div class="mini"><span>Best Use</span><strong>Confirmation</strong></div>
+          <div class="mini"><span>Pair Display</span><strong>BTCUSD</strong></div>
         </div>
-
-        <p class="footer-note">
-          This app is for trade analysis only. BTC can move sharply. Always check the chart before entering and manage your risk.
-        </p>
+        <p class="footer-note">This app is for analysis only, not financial advice. BTC can move sharply, so always check your chart and manage your risk.</p>
       </div>
     </section>
   </main>
 
   <script>
+    const $ = (id) => document.getElementById(id);
     const els = {
-      price: document.getElementById('price'),
-      move: document.getElementById('move'),
-      signal: document.getElementById('signal'),
-      confidenceText: document.getElementById('confidenceText'),
-      confidenceBar: document.getElementById('confidenceBar'),
-      buyAbove: document.getElementById('buyAbove'),
-      sellBelow: document.getElementById('sellBelow'),
-      support: document.getElementById('support'),
-      resistance: document.getElementById('resistance'),
-      actionText: document.getElementById('actionText'),
-      entryZone: document.getElementById('entryZone'),
-      stopLoss: document.getElementById('stopLoss'),
-      takeProfit1: document.getElementById('takeProfit1'),
-      takeProfit2: document.getElementById('takeProfit2'),
-      ema20: document.getElementById('ema20'),
-      ema50: document.getElementById('ema50'),
-      rsi: document.getElementById('rsi'),
-      atr: document.getElementById('atr'),
-      high24: document.getElementById('high24'),
-      low24: document.getElementById('low24'),
-      explainText: document.getElementById('explainText'),
-      statusText: document.getElementById('statusText'),
-      statusDot: document.getElementById('statusDot')
+      price:$('price'), move:$('move'), signal:$('signal'), confidenceText:$('confidenceText'), confidenceBar:$('confidenceBar'),
+      buyAbove:$('buyAbove'), sellBelow:$('sellBelow'), support:$('support'), resistance:$('resistance'), actionText:$('actionText'),
+      entryZone:$('entryZone'), stopLoss:$('stopLoss'), takeProfit1:$('takeProfit1'), takeProfit2:$('takeProfit2'), ema20:$('ema20'),
+      ema50:$('ema50'), rsi:$('rsi'), atr:$('atr'), high24:$('high24'), low24:$('low24'), explainText:$('explainText'),
+      statusText:$('statusText'), statusDot:$('statusDot'), getBtn:$('getBtn')
     };
 
-    const money = (n) => '$' + Number(n).toLocaleString('en-US', {
-      maximumFractionDigits: 0
-    });
+    const money = (n) => '$' + Number(n).toLocaleString('en-US', {maximumFractionDigits:0});
+    const money2 = (n) => '$' + Number(n).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
 
-   
+    function ema(values, period){
+      const k = 2 / (period + 1);
+      let out = values[0];
+      for(let i=1;i<values.length;i++) out = values[i] * k + out * (1-k);
+      return out;
+    }
+
+    function calcRSI(closes, period=14){
+      let gains=0, losses=0;
+      for(let i=closes.length-period;i<closes.length;i++){
+        const diff = closes[i] - closes[i-1];
+        if(diff >= 0) gains += diff; else losses -= diff;
+      }
+      const avgGain = gains / period;
+      const avgLoss = losses / period;
+      if(avgLoss === 0) return 100;
+      const rs = avgGain / avgLoss;
+      return 100 - (100 / (1 + rs));
+    }
+
+    function calcATR(candles, period=14){
+      const trs = [];
+      for(let i=candles.length-period;i<candles.length;i++){
+        const high = candles[i].high;
+        const low = candles[i].low;
+        const prevClose = candles[i-1].close;
+        trs.push(Math.max(high-low, Math.abs(high-prevClose), Math.abs(low-prevClose)));
+      }
+      return trs.reduce((a,b)=>a+b,0) / trs.length;
+    }
+
+    function setTheme(signal, confidence){
+      const color = signal === 'BUY' ? 'var(--buy)' : signal === 'SELL' ? 'var(--sell)' : 'var(--wait)';
+      els.signal.style.color = color;
+      els.confidenceBar.style.background = color;
+      els.confidenceBar.style.width = confidence + '%';
+      els.statusDot.style.background = color;
+      els.statusDot.style.boxShadow = `0 0 18px ${color}`;
+    }
+
+    function setLoading(){
+      els.getBtn.disabled = true;
+      els.getBtn.textContent = 'GETTING SIGNAL...';
+      els.statusText.textContent = 'Getting BTCUSD signal...';
+      els.actionText.textContent = 'Checking market...';
+    }
+
+    function doneLoading(){
+      els.getBtn.disabled = false;
+      els.getBtn.textContent = 'GET SIGNAL';
+    }
+
+    async function getJson(url){
+      const res = await fetch(url, {cache:'no-store'});
+      if(!res.ok) throw new Error('Fetch failed: ' + url);
+      return await res.json();
+    }
+
+    async function getSignal(){
+      try{
+        setLoading();
+
+        const tf = $('timeframe').value;
+        const risk = $('riskMode').value;
+
+        let slM = 1.1, tp1M = 1.5, tp2M = 2.3;
+        if(risk === 'tight'){ slM = 0.8; tp1M = 1.1; tp2M = 1.7; }
+        if(risk === 'wide'){ slM = 1.6; tp1M = 2.1; tp2M = 3.2; }
+
+        const [ticker, ohlc] = await Promise.all([
+          getJson('https://api.kraken.com/0/public/Ticker?pair=XBTUSD'),
+          getJson(`https://api.kraken.com/0/public/OHLC?pair=XBTUSD&interval=${tf}`)
+        ]);
+
+        if(ticker.error && ticker.error.length) throw new Error(ticker.error.join(', '));
+        if(ohlc.error && ohlc.error.length) throw new Error(ohlc.error.join(', '));
+
+        const tickerKey = Object.keys(ticker.result)[0];
+        const ohlcKey = Object.keys(ohlc.result).find(k => k !== 'last');
+
+        const t = ticker.result[tickerKey];
+        const raw = ohlc.result[ohlcKey];
+
+        const candles = raw.map(k => ({
+          time: Number(k[0]),
+          open: Number(k[1]),
+          high: Number(k[2]),
+          low: Number(k[3]),
+          close: Number(k[4])
+        })).slice(-120);
+
+        if(candles.length < 60) throw new Error('Not enough candle data');
+
+        const closes = candles.map(c=>c.close);
+        const highs = candles.map(c=>c.high);
+        const lows = candles.map(c=>c.low);
+
+        const current = Number(t.c[0]);
+        const open24 = Number(t.o);
+        const high24 = Number(t.h[1]);
+        const low24 = Number(t.l[1]);
+        const change = ((current - open24) / open24) * 100;
+
+        const e20 = ema(closes.slice(-60), 20);
+        const e50 = ema(closes.slice(-80), 50);
+        const rsi = calcRSI(closes);
+        const atr = calcATR(candles);
+
+        const recentHigh = Math.max(...highs.slice(-24));
+        const recentLow = Math.min(...lows.slice(-24));
+        const buyAbove = recentHigh + atr * 0.12;
+        const sellBelow = recentLow - atr * 0.12;
+
+        let score = 0;
+        if(current > e20) score += 1; else score -= 1;
+        if(e20 > e50) score += 1; else score -= 1;
+        if(rsi > 52 && rsi < 72) score += 1;
+        if(rsi < 48 && rsi > 28) score -= 1;
+        if(current > recentHigh - atr * 0.35) score += 1;
+        if(current < recentLow + atr * 0.35) score -= 1;
+        if(change > 0.35) score += 1;
+        if(change < -0.35) score -= 1;
+
+        let signal = 'WAIT';
+        if(score >= 3 && rsi < 74) signal = 'BUY';
+        if(score <= -3 && rsi > 26) signal = 'SELL';
+
+        const confidence = Math.min(94, Math.max(48, 50 + Math.abs(score) * 11 + Math.min(10, Math.abs(change))));
+
+        els.price.textContent = money2(current);
+        els.move.textContent = `${change >= 0 ? '▲' : '▼'} ${change.toFixed(2)}% over 24h`;
+        els.move.style.color = change >= 0 ? 'var(--buy)' : 'var(--sell)';
+        els.signal.textContent = signal;
+        els.confidenceText.textContent = `${Math.round(confidence)}%`;
+
+        els.buyAbove.textContent = money(buyAbove);
+        els.sellBelow.textContent = money(sellBelow);
+        els.support.textContent = money(recentLow);
+        els.resistance.textContent = money(recentHigh);
+
+        els.ema20.textContent = money(e20);
+        els.ema50.textContent = money(e50);
+        els.rsi.textContent = rsi.toFixed(1);
+        els.atr.textContent = money(atr);
+        els.high24.textContent = money(high24);
+        els.low24.textContent = money(low24);
+
+        if(signal === 'BUY'){
+          const entry = current;
+          const sl = entry - atr * slM;
+          const tp1 = entry + atr * tp1M;
+          const tp2 = entry + atr * tp2M;
+          els.actionText.textContent = 'BUY BTCUSD';
+          els.entryZone.textContent = money2(entry);
+          els.stopLoss.textContent = money2(sl);
+          els.takeProfit1.textContent = money2(tp1);
+          els.takeProfit2.textContent = money2(tp2);
+          els.explainText.textContent = 'BUY signal: BTC is showing bullish trend and momentum. Entry, SL and TP are calculated from live price and ATR volatility.';
+        } else if(signal === 'SELL'){
+          const entry = current;
+          const sl = entry + atr * slM;
+          const tp1 = entry - atr * tp1M;
+          const tp2 = entry - atr * tp2M;
+          els.actionText.textContent = 'SELL BTCUSD';
+          els.entryZone.textContent = money2(entry);
+          els.stopLoss.textContent = money2(sl);
+          els.takeProfit1.textContent = money2(tp1);
+          els.takeProfit2.textContent = money2(tp2);
+          els.explainText.textContent = 'SELL signal: BTC is showing bearish trend and momentum. Entry, SL and TP are calculated from live price and ATR volatility.';
+        } else {
+          els.actionText.textContent = 'WAIT';
+          els.entryZone.textContent = `Buy above ${money(buyAbove)} / Sell below ${money(sellBelow)}`;
+          els.stopLoss.textContent = 'No trade';
+          els.takeProfit1.textContent = 'No trade';
+          els.takeProfit2.textContent = 'No trade';
+          els.explainText.textContent = 'WAIT signal: BTC is mixed or trapped between support and resistance. Wait for a cleaner breakout or breakdown.';
+        }
+
+        setTheme(signal, confidence);
+        els.statusText.textContent = `Signal generated ${new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}`;
+      } catch(err){
+        console.error(err);
+        setTheme('WAIT', 0);
+        els.statusText.textContent = 'Could not get live signal';
+        els.signal.textContent = 'WAIT';
+        els.actionText.textContent = 'API error';
+        els.entryZone.textContent = '--';
+        els.stopLoss.textContent = '--';
+        els.takeProfit1.textContent = '--';
+        els.takeProfit2.textContent = '--';
+        els.explainText.textContent = 'Live market data failed. This version uses Kraken public BTC/USD data. Check the browser console for details, or try refreshing the page.';
+      } finally {
+        doneLoading();
+      }
+    }
+  </script>
+</body>
+</html>
