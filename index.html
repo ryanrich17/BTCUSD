@@ -1,0 +1,586 @@
+Copy this into GitHub as your index.html file:
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BTCUSD Signal App</title>
+  <style>
+    :root {
+      --bg: #080b12;
+      --panel: #111827;
+      --panel-2: #151f32;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --line: rgba(255,255,255,0.08);
+      --buy: #22c55e;
+      --sell: #ef4444;
+      --wait: #f59e0b;
+      --blue: #38bdf8;
+      --purple: #a78bfa;
+      --shadow: 0 18px 50px rgba(0,0,0,0.35);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 28%),
+        radial-gradient(circle at top right, rgba(167, 139, 250, 0.16), transparent 30%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    .app {
+      width: min(1180px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 28px 0 40px;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: center;
+      margin-bottom: 22px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .coin {
+      width: 50px;
+      height: 50px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #f7931a, #fbbf24);
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      font-size: 26px;
+      color: #111827;
+      box-shadow: var(--shadow);
+    }
+    h1 {
+      font-size: clamp(24px, 4vw, 38px);
+      line-height: 1;
+      margin: 0 0 6px;
+      letter-spacing: -0.04em;
+    }
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      padding: 10px 13px;
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--wait);
+      box-shadow: 0 0 18px var(--wait);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 18px;
+    }
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+      border: 1px solid var(--line);
+      border-radius: 26px;
+      padding: 22px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+    .hero {
+      min-height: 320px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .top-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .pair {
+      color: var(--muted);
+      margin: 0 0 7px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      font-size: 12px;
+    }
+    .price {
+      font-size: clamp(42px, 8vw, 74px);
+      letter-spacing: -0.07em;
+      line-height: 0.95;
+      margin: 0;
+    }
+    .move {
+      margin-top: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .signal-box {
+      text-align: right;
+      min-width: 145px;
+    }
+    .signal-label {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 7px;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+    }
+    .signal {
+      font-size: 34px;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+    }
+    .confidence-wrap {
+      margin-top: 24px;
+    }
+    .bar-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .bar {
+      height: 12px;
+      width: 100%;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: var(--wait);
+      transition: width 0.45s ease, background 0.45s ease;
+    }
+    .levels {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-top: 22px;
+    }
+    .level {
+      background: rgba(255,255,255,0.045);
+      border: 1px solid var(--line);
+      padding: 14px;
+      border-radius: 18px;
+    }
+    .level span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 7px;
+    }
+    .level strong {
+      font-size: 18px;
+    }
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .section-title h2 {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: -0.03em;
+    }
+    .refresh {
+      border: 0;
+      background: rgba(56,189,248,0.13);
+      color: #bae6fd;
+      padding: 9px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 800;
+    }
+    .setup-list {
+      display: grid;
+      gap: 12px;
+    }
+    .setup-item {
+      background: rgba(255,255,255,0.045);
+      border: 1px solid var(--line);
+      padding: 16px;
+      border-radius: 18px;
+      display: grid;
+      gap: 6px;
+    }
+    .setup-item .label {
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      font-weight: 800;
+    }
+    .setup-item .value {
+      font-size: 21px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+    }
+    .indicators {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 18px;
+    }
+    .indicator {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      border-radius: 18px;
+      padding: 14px;
+    }
+    .indicator span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+    .indicator strong { font-size: 19px; }
+    .explain {
+      color: #cbd5e1;
+      line-height: 1.55;
+      margin: 16px 0 0;
+      font-size: 14px;
+    }
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+    select, input {
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 12px;
+      outline: none;
+    }
+    option { color: #111827; }
+    .footer-note {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .mini-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 18px;
+    }
+    .mini {
+      border-radius: 18px;
+      padding: 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--line);
+    }
+    .mini span { color: var(--muted); font-size: 12px; display: block; margin-bottom: 6px; }
+    .mini strong { font-size: 18px; }
+    @media (max-width: 850px) {
+      header, .top-row { flex-direction: column; align-items: flex-start; }
+      .grid { grid-template-columns: 1fr; }
+      .levels, .indicators, .mini-grid { grid-template-columns: repeat(2, 1fr); }
+      .signal-box { text-align: left; }
+    }
+    @media (max-width: 520px) {
+      .levels, .indicators, .mini-grid { grid-template-columns: 1fr; }
+      .card { padding: 18px; border-radius: 22px; }
+      .price { font-size: 44px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header>
+      <div class="brand">
+        <div class="coin">₿</div>
+        <div>
+          <h1>BTCUSD Signal App</h1>
+          <p class="subtitle">Live Bitcoin trade bias using trend, RSI, ATR and key price levels.</p>
+        </div>
+      </div>
+      <div class="status-pill"><span class="dot" id="statusDot"></span><span id="statusText">Loading live market data...</span></div>
+    </header>
+    <section class="grid">
+      <div class="card hero">
+        <div>
+          <div class="top-row">
+            <div>
+              <p class="pair">BTCUSD / BITCOIN</p>
+              <h2 class="price" id="price">--</h2>
+              <div class="move" id="move">Waiting for price update...</div>
+            </div>
+            <div class="signal-box">
+              <div class="signal-label">TRADE BIAS</div>
+              <div class="signal" id="signal">WAIT</div>
+            </div>
+          </div>
+          <div class="confidence-wrap">
+            <div class="bar-label"><span>Confidence</span><strong id="confidenceText">--%</strong></div>
+            <div class="bar"><div class="bar-fill" id="confidenceBar"></div></div>
+          </div>
+        </div>
+        <div>
+          <div class="levels">
+            <div class="level"><span>Buy Above</span><strong id="buyAbove">--</strong></div>
+            <div class="level"><span>Sell Below</span><strong id="sellBelow">--</strong></div>
+            <div class="level"><span>Support</span><strong id="support">--</strong></div>
+            <div class="level"><span>Resistance</span><strong id="resistance">--</strong></div>
+          </div>
+        </div>
+      </div>
+      <aside class="card">
+        <div class="section-title">
+          <h2>Current Setup</h2>
+          <button class="refresh" onclick="loadMarket()">Refresh</button>
+        </div>
+        <div class="setup-list">
+          <div class="setup-item">
+            <div class="label">ACTION</div>
+            <div class="value" id="actionText">Wait for confirmation</div>
+          </div>
+          <div class="setup-item">
+            <div class="label">ENTRY ZONE</div>
+            <div class="value" id="entryZone">--</div>
+          </div>
+          <div class="setup-item">
+            <div class="label">STOP LOSS</div>
+            <div class="value" id="stopLoss">--</div>
+          </div>
+          <div class="setup-item">
+            <div class="label">TAKE PROFIT</div>
+            <div class="value" id="takeProfit">--</div>
+          </div>
+        </div>
+      </aside>
+    </section>
+    <section class="grid" style="margin-top:18px;">
+      <div class="card">
+        <div class="section-title">
+          <h2>Signal Engine</h2>
+        </div>
+        <div class="indicators">
+          <div class="indicator"><span>EMA 20</span><strong id="ema20">--</strong></div>
+          <div class="indicator"><span>EMA 50</span><strong id="ema50">--</strong></div>
+          <div class="indicator"><span>RSI 14</span><strong id="rsi">--</strong></div>
+          <div class="indicator"><span>ATR 14</span><strong id="atr">--</strong></div>
+          <div class="indicator"><span>24h High</span><strong id="high24">--</strong></div>
+          <div class="indicator"><span>24h Low</span><strong id="low24">--</strong></div>
+        </div>
+        <p class="explain" id="explainText">The app will wait for live data, then calculate whether BTC is trending, overbought, oversold, or stuck in the middle.</p>
+      </div>
+      <div class="card">
+        <div class="section-title">
+          <h2>Settings</h2>
+        </div>
+        <div class="controls">
+          <select id="timeframe" onchange="loadMarket()">
+            <option value="15m">15m Scalping</option>
+            <option value="30m">30m Intraday</option>
+            <option value="1h" selected>1h Safer Bias</option>
+            <option value="4h">4h Swing Bias</option>
+          </select>
+          <select id="riskMode" onchange="loadMarket()">
+            <option value="tight">Tight Risk</option>
+            <option value="normal" selected>Normal Risk</option>
+            <option value="wide">Wide Risk</option>
+          </select>
+        </div>
+        <div class="mini-grid">
+          <div class="mini"><span>Market Source</span><strong>Binance BTCUSDT</strong></div>
+          <div class="mini"><span>Refresh Rate</span><strong>60 seconds</strong></div>
+          <div class="mini"><span>Best Use</span><strong>Confirmation only</strong></div>
+          <div class="mini"><span>Pair Display</span><strong>BTCUSD</strong></div>
+        </div>
+        <p class="footer-note">This is an analysis tool, not financial advice. Always check your own chart before entering. BTC can move sharply and stops can slip during high volatility.</p>
+      </div>
+    </section>
+  </main>
+  <script>
+    const els = {
+      price: document.getElementById('price'),
+      move: document.getElementById('move'),
+      signal: document.getElementById('signal'),
+      confidenceText: document.getElementById('confidenceText'),
+      confidenceBar: document.getElementById('confidenceBar'),
+      buyAbove: document.getElementById('buyAbove'),
+      sellBelow: document.getElementById('sellBelow'),
+      support: document.getElementById('support'),
+      resistance: document.getElementById('resistance'),
+      actionText: document.getElementById('actionText'),
+      entryZone: document.getElementById('entryZone'),
+      stopLoss: document.getElementById('stopLoss'),
+      takeProfit: document.getElementById('takeProfit'),
+      ema20: document.getElementById('ema20'),
+      ema50: document.getElementById('ema50'),
+      rsi: document.getElementById('rsi'),
+      atr: document.getElementById('atr'),
+      high24: document.getElementById('high24'),
+      low24: document.getElementById('low24'),
+      explainText: document.getElementById('explainText'),
+      statusText: document.getElementById('statusText'),
+      statusDot: document.getElementById('statusDot')
+    };
+    const money = (n) => '$' + Number(n).toLocaleString('en-US', { maximumFractionDigits: 0 });
+    const money2 = (n) => '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    function ema(values, period) {
+      const k = 2 / (period + 1);
+      let result = values[0];
+      for (let i = 1; i < values.length; i++) result = values[i] * k + result * (1 - k);
+      return result;
+    }
+    function calcRSI(closes, period = 14) {
+      let gains = 0, losses = 0;
+      for (let i = closes.length - period; i < closes.length; i++) {
+        const diff = closes[i] - closes[i - 1];
+        if (diff >= 0) gains += diff;
+        else losses -= diff;
+      }
+      const avgGain = gains / period;
+      const avgLoss = losses / period;
+      if (avgLoss === 0) return 100;
+      const rs = avgGain / avgLoss;
+      return 100 - (100 / (1 + rs));
+    }
+    function calcATR(candles, period = 14) {
+      const trs = [];
+      for (let i = candles.length - period; i < candles.length; i++) {
+        const high = candles[i].high;
+        const low = candles[i].low;
+        const prevClose = candles[i - 1].close;
+        trs.push(Math.max(high - low, Math.abs(high - prevClose), Math.abs(low - prevClose)));
+      }
+      return trs.reduce((a, b) => a + b, 0) / trs.length;
+    }
+    function setTheme(signal, confidence) {
+      const color = signal === 'BUY' ? 'var(--buy)' : signal === 'SELL' ? 'var(--sell)' : 'var(--wait)';
+      els.signal.style.color = color;
+      els.confidenceBar.style.background = color;
+      els.confidenceBar.style.width = confidence + '%';
+      els.statusDot.style.background = color;
+      els.statusDot.style.boxShadow = `0 0 18px ${color}`;
+    }
+    async function loadMarket() {
+      try {
+        els.statusText.textContent = 'Updating live BTC data...';
+        const tf = document.getElementById('timeframe').value;
+        const risk = document.getElementById('riskMode').value;
+        const riskMultiplier = risk === 'tight' ? 0.8 : risk === 'wide' ? 1.45 : 1.1;
+        const [tickerRes, klinesRes] = await Promise.all([
+          fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT'),
+          fetch(`https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=${tf}&limit=120`)
+        ]);
+        if (!tickerRes.ok || !klinesRes.ok) throw new Error('Market API unavailable');
+        const ticker = await tickerRes.json();
+        const raw = await klinesRes.json();
+        const candles = raw.map(k => ({
+          open: Number(k[1]),
+          high: Number(k[2]),
+          low: Number(k[3]),
+          close: Number(k[4])
+        }));
+        const closes = candles.map(c => c.close);
+        const highs = candles.map(c => c.high);
+        const lows = candles.map(c => c.low);
+        const current = Number(ticker.lastPrice);
+        const change = Number(ticker.priceChangePercent);
+        const high24 = Number(ticker.highPrice);
+        const low24 = Number(ticker.lowPrice);
+        const e20 = ema(closes.slice(-60), 20);
+        const e50 = ema(closes.slice(-80), 50);
+        const rsi = calcRSI(closes);
+        const atr = calcATR(candles);
+        const recentHigh = Math.max(...highs.slice(-24));
+        const recentLow = Math.min(...lows.slice(-24));
+        let score = 0;
+        if (current > e20) score += 1; else score -= 1;
+        if (e20 > e50) score += 1; else score -= 1;
+        if (rsi > 52 && rsi < 72) score += 1;
+        if (rsi < 48 && rsi > 28) score -= 1;
+        if (current > recentHigh - atr * 0.35) score += 1;
+        if (current < recentLow + atr * 0.35) score -= 1;
+        let signal = 'WAIT';
+        if (score >= 3) signal = 'BUY';
+        if (score <= -3) signal = 'SELL';
+        const confidence = Math.min(92, Math.max(45, 48 + Math.abs(score) * 13 + Math.min(12, Math.abs(change))));
+        const buyAbove = recentHigh + atr * 0.12;
+        const sellBelow = recentLow - atr * 0.12;
+        const stopBuy = current - atr * riskMultiplier;
+        const stopSell = current + atr * riskMultiplier;
+        const targetBuy1 = current + atr * 1.45;
+        const targetBuy2 = current + atr * 2.25;
+        const targetSell1 = current - atr * 1.45;
+        const targetSell2 = current - atr * 2.25;
+        els.price.textContent = money2(current);
+        els.move.textContent = `${change >= 0 ? '▲' : '▼'} ${change.toFixed(2)}% over 24h`;
+        els.move.style.color = change >= 0 ? 'var(--buy)' : 'var(--sell)';
+        els.signal.textContent = signal;
+        els.confidenceText.textContent = `${Math.round(confidence)}%`;
+        els.buyAbove.textContent = money(buyAbove);
+        els.sellBelow.textContent = money(sellBelow);
+        els.support.textContent = money(recentLow);
+        els.resistance.textContent = money(recentHigh);
+        els.ema20.textContent = money(e20);
+        els.ema50.textContent = money(e50);
+        els.rsi.textContent = rsi.toFixed(1);
+        els.atr.textContent = money(atr);
+        els.high24.textContent = money(high24);
+        els.low24.textContent = money(low24);
+        if (signal === 'BUY') {
+          els.actionText.textContent = 'Look for buy confirmation';
+          els.entryZone.textContent = `${money(current - atr * 0.25)} - ${money(buyAbove)}`;
+          els.stopLoss.textContent = money(stopBuy);
+          els.takeProfit.textContent = `${money(targetBuy1)} / ${money(targetBuy2)}`;
+          els.explainText.textContent = 'BTC is showing bullish pressure because price is trading above short-term trend levels and momentum supports continuation. Avoid chasing; wait for a pullback or breakout confirmation.';
+        } else if (signal === 'SELL') {
+          els.actionText.textContent = 'Look for sell confirmation';
+          els.entryZone.textContent = `${money(sellBelow)} - ${money(current + atr * 0.25)}`;
+          els.stopLoss.textContent = money(stopSell);
+          els.takeProfit.textContent = `${money(targetSell1)} / ${money(targetSell2)}`;
+          els.explainText.textContent = 'BTC is showing bearish pressure because price is trading below short-term trend levels and momentum supports downside continuation. Avoid selling into support without confirmation.';
+        } else {
+          els.actionText.textContent = 'Wait for confirmation';
+          els.entryZone.textContent = `Buy above ${money(buyAbove)} / Sell below ${money(sellBelow)}`;
+          els.stopLoss.textContent = 'Set after breakout';
+          els.takeProfit.textContent = 'Use ATR target after entry';
+          els.explainText.textContent = 'BTC is currently in a mixed area. The safer play is to wait for price to break resistance for buys or lose support for sells.';
+        }
+        setTheme(signal, confidence);
+        els.statusText.textContent = `Live data updated ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+      } catch (err) {
+        els.statusText.textContent = 'Could not load live data. Check connection or API access.';
+        els.explainText.textContent = 'The app could not reach Binance market data. This can happen on restricted networks. Try refreshing or hosting from GitHub Pages/Netlify.';
+        console.error(err);
+      }
+    }
+    loadMarket();
+    setInterval(loadMarket, 60000);
+  </script>
+</body>
+</html>
